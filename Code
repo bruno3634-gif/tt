@@ -1,0 +1,239 @@
+
+// PIC32MX120F032B Configuration Bit Settings
+
+// 'C' source line config statements
+
+// DEVCFG3
+#pragma config USERID = 0xFFFF          // Enter Hexadecimal value (Enter Hexadecimal value)
+#pragma config PMDL1WAY = ON            // Peripheral Module Disable Configuration (Allow only one reconfiguration)
+#pragma config IOL1WAY = ON             // Peripheral Pin Select Configuration (Allow only one reconfiguration)
+
+// DEVCFG2
+#pragma config FPLLIDIV = DIV_2         // PLL Input Divider (2x Divider)
+#pragma config FPLLMUL = MUL_20         // PLL Multiplier (20x Multiplier)
+#pragma config FPLLODIV = DIV_4         // System PLL Output Clock Divider (PLL Divide by 4)
+
+// DEVCFG1
+#pragma config FNOSC = FRCPLL           // Oscillator Selection Bits (Fast RC Osc with PLL)
+#pragma config FSOSCEN = OFF            // Secondary Oscillator Enable (Disabled)
+#pragma config IESO = OFF               // Internal/External Switch Over (Disabled)
+#pragma config POSCMOD = OFF            // Primary Oscillator Configuration (Primary osc disabled)
+#pragma config OSCIOFNC = OFF            // CLKO Output Signal Active on the OSCO Pin (Enabled)
+#pragma config FPBDIV = DIV_1           // Peripheral Clock Divisor (Pb_Clk is Sys_Clk/1)
+#pragma config FCKSM = CSDCMD           // Clock Switching and Monitor Selection (Clock Switch Disable, FSCM Disabled)
+#pragma config WDTPS = PS1048576        // Watchdog Timer Postscaler (1:1048576)
+#pragma config WINDIS = OFF             // Watchdog Timer Window Enable (Watchdog Timer is in Non-Window Mode)
+#pragma config FWDTEN = OFF             // Watchdog Timer Enable (WDT Disabled (SWDTEN Bit Controls))
+#pragma config FWDTWINSZ = WINSZ_25     // Watchdog Timer Window Size (Window Size is 25%)
+
+// DEVCFG0
+#pragma config JTAGEN = OFF             // JTAG Enable (JTAG Disabled)
+#pragma config ICESEL = ICS_PGx1        // ICE/ICD Comm Channel Select (Communicate on PGEC1/PGED1)
+#pragma config PWP = OFF                // Program Flash Write Protect (Disable)
+#pragma config BWP = OFF                // Boot Flash Write Protect bit (Protection Disabled)
+#pragma config CP = OFF                 // Code Protect (Protection Disabled)
+
+// #pragma config statements should precede project file includes.
+// Use project enums instead of #define for ON and OFF.
+
+ 
+#include <xc.h>
+#include <proc/PIC32MX/p32mx120f032b.h>
+
+
+
+
+#define joyx1  ADC1BUF0
+#define joyy1  ADC1BUF1
+#define joyx2  ADC1BUF2
+#define joyy2  ADC1BUF3
+#define BTN1 PORTBbits.RB14
+#define BTN2 PORTBbits.RB15
+
+
+#define ENABLE_MASK		0x10
+#define DIR_MASK		0x08
+#define ADDRESS_MASK	0x07
+#define UNUSED_MASK		0xE0
+
+#define DIR_CW			0x08
+#define DIR_CCW			0x00
+
+#define JOY_SENS		0.25
+
+#define ADDR_EIXO1		0x00
+#define ADDR_EIXO2		0x01
+#define ADDR_EIXO3		0x02
+#define ADDR_EIXO4		0x03
+
+void init(void);
+int ReadADC(int ch);
+
+
+void main(void)
+{
+	init();
+
+	while(1)
+	{
+		//joystick 1
+		if(joyx1 < 512 * (1 - JOY_SENS))
+		{
+			if (U1STAbits.UTXBF == 0) 
+			{
+				U1TXREG = ENABLE_MASK | DIR_CW | ADDR_EIXO1;
+			}
+		}
+		else if(joyx1 > 512 * (1 + JOY_SENS))
+		{
+			if (U1STAbits.UTXBF == 0) 
+			{
+				U1TXREG = ENABLE_MASK | DIR_CCW | ADDR_EIXO1;
+			}	
+		}
+		else {
+			if (U1STAbits.UTXBF == 0) 
+			{
+				U1TXREG = ADDR_EIXO1;
+			}	
+		}
+
+
+		if(joyy1 < 512 * (1 - JOY_SENS))
+		{
+			if (U1STAbits.UTXBF == 0) 
+			{
+				U1TXREG = ENABLE_MASK | DIR_CW | ADDR_EIXO2;
+			}
+		}
+		else if(joyy1 > 512 * (1 + JOY_SENS))
+		{
+			if (U1STAbits.UTXBF == 0) 
+			{
+				U1TXREG = ENABLE_MASK | DIR_CCW | ADDR_EIXO2;
+			}	
+		}
+		else {
+			if (U1STAbits.UTXBF == 0) 
+			{
+				U1TXREG = ADDR_EIXO2;
+			}	
+		}
+		
+		// Joystick 2
+		
+		if(joyx2 < 512 * (1 - JOY_SENS))
+		{
+			if (U1STAbits.UTXBF == 0) 
+			{
+				U1TXREG = ENABLE_MASK | DIR_CW | ADDR_EIXO3;
+			}
+		}
+		else if(joyx2 > 512 * (1 + JOY_SENS))
+		{
+			if (U1STAbits.UTXBF == 0) 
+			{
+				U1TXREG = ENABLE_MASK | DIR_CCW | ADDR_EIXO3;
+			}	
+		}
+		else {
+			if (U1STAbits.UTXBF == 0) 
+			{
+				U1TXREG = ADDR_EIXO3;
+			}	
+		}
+
+
+		if(joyy2 < 512 * (1 - JOY_SENS))
+		{
+			if (U1STAbits.UTXBF == 0) 
+			{
+				U1TXREG = ENABLE_MASK | DIR_CW | ADDR_EIXO4;
+			}
+		}
+		else if(joyy2 > 512 * (1 + JOY_SENS))
+		{
+			if (U1STAbits.UTXBF == 0) 
+			{
+				U1TXREG = ENABLE_MASK | DIR_CCW | ADDR_EIXO4;
+			}	
+		}
+		else {
+			if (U1STAbits.UTXBF == 0) 
+			{
+				U1TXREG = ADDR_EIXO4;
+			}	
+		}
+		
+		
+
+		while(IFS0bits.T1IF == 0);
+		IFS0bits.T1IF = 0;
+	}
+}
+
+void init(void){
+
+	ANSELA  = 0x0003;
+	ANSELB  = 0x000C;
+	LATA	= 0x0000;
+	LATB	= 0x0000;
+	TRISA   = 0x0003;
+	TRISB   = 0xC14F;
+	CNPDB   = 0x3000;
+	
+	U1RXR = 1;//U1RX no pino RPB6
+	RPB4R = 1;//U1TX no pino RPB4
+	U1CTSR = 4;//U1CTS no pino RB8
+	RPB9R = 1;//U1RTS no pino RB9
+	
+	U1STAbits.ADDEN = 0;
+	U1STAbits.UTXINV =0;
+	U1STAbits.UTXEN = 1;
+	U1STAbits.URXEN = 1;
+	U1STAbits.ADM_EN = 0;
+	U1MODEbits.BRGH = 0;
+	U1BRG = ((20000000/9600)/16)-1;
+	
+	
+	U1MODEbits.STSEL = 0;
+	U1MODEbits.PDSEL = 0b00;
+	U1MODEbits.BRGH  = 0;
+	U1MODEbits.RXINV = 0;
+	U1MODEbits.ABAUD = 0;
+	U1MODEbits.LPBACK = 0;
+	//U1MODEbits.UEN = 0b10;
+	U1MODEbits.UEN = 2;
+	U1MODEbits.IREN = 0;
+	U1MODEbits.SIDL = 0;
+	U1MODEbits.LPBACK = 0;
+	U1MODEbits.RTSMD  = 1;
+	U1MODEbits.IREN  = 0;
+	U1MODEbits.SIDL  = 0;
+	U1MODEbits.ON = 1;
+	
+	
+	AD1CSSL = 0x0033;
+	AD1CON2bits.SMPI = 3;
+	AD1CON3bits.ADCS = 0b00111111;  // TAD = 2*TPB
+	AD1CON3bits.SAMC = 0b11111;     // 31 TAD auto-sample time
+	AD1CON3bits.ADRC = 0;           // Clock derived from PBclock
+	
+	AD1CON2bits.CSCNA = 1;
+	AD1CON2bits.VCFG = 0;
+	
+	
+	AD1CON1bits.ASAM = 1;           // The ADC sample and hold amplifier is sampling
+	AD1CON1bits.SSRC = 0b111;
+	AD1CON1bits.FORM = 0b000;
+	AD1CON1bits.SIDL = 0;
+	AD1CON1bits.ON = 1;
+	
+	PR1 = 31249;			//10Hz @ PBCLK = 20MHz PS 1:64
+	T1CONbits.TCS = 0;		//Internal peripheral clock
+	T1CONbits.TCKPS =2;		//Timer Input Clock Prescale Select bits
+	T1CONbits.TWDIS =0;		//0 = Back-to-back writes are enabled (Legacy Asynchronous Timer functionality)
+	T1CONbits.SIDL = 0;		//Continue module operation when the device enters Idle mode
+	T1CONbits.ON = 1;		//Timer is enabled
+}
+ 

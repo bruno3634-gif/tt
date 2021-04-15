@@ -53,7 +53,7 @@
 
 #define ENABLE_MASK		0x10
 #define DIR_MASK		0x08
-#define ADDRESS_MASK	0x07
+#define ADDRESS_MASK		0x07
 #define UNUSED_MASK		0xE0
 
 #define DIR_CW			0x08
